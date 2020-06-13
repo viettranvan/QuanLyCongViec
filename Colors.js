@@ -11,5 +11,7 @@ export default colors = {
     lightGray: '#CACACA',
     pink:'#FF69B4',
     lightGray2: '#E4EEF2',
-    red: '#F70F32'
+    red: '#F70F32',
+    purple: '#800080',
+    brown: '#523B29'
 }

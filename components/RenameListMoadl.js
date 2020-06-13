@@ -3,15 +3,31 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, ImageBackgr
 import { AntDesign } from '@expo/vector-icons'
 import Colors from '../Colors';
 
-export default class RenameListModal extends React.Component {
 
+export default class RenameListModal extends React.Component {
+    backgroundColor = ['#24A6D9', '#A7CBD9', '#EBE306', '#19925B', '#800080', '#F70F32', '#FF69B4'];
     state = {
         name: '',
+        color: this.props.list.color
     }
 
-    updateName(){
+    renderColor() {
+        return this.backgroundColor.map(color => {
+            return (
+                <TouchableOpacity
+                    style={{ height: 30, width: 30, borderRadius: 8, backgroundColor: color }}
+                    key={color}
+                    onPress={() => this.setState({ color })}
+                />
+            );
+        });
+    }
+
+    // cập nhật lại tên list
+    updateName() {
         let list = this.props.list;
         list.name = this.state.name;
+        list.color = this.state.color;
 
         this.props.updateList(list);
         this.setState({ name: '' });
@@ -23,22 +39,28 @@ export default class RenameListModal extends React.Component {
         //Keyboard.dismiss();
     }
 
+    // nếu state.name khác rỗng thì cập nhật lại tên list
     checkName = () => {
         //Handler for the Submit onPress
+
         if (this.state.name != '') {
-          this.updateName();
+            this.updateName();
         } else {
-          Alert.alert('Thông báo','Vui lòng nhập tên mới');
+            Alert.alert('Thông báo', 'Vui lòng nhập tên mới');
         }
-      };
+    };
 
     render() {
         let list = this.props.list
         return (
+            // source={require('../background/rename-background.jpg')}
             <ImageBackground source={require('../background/rename-background.jpg')} style={styles.container}>
+                {/* nút thoát */}
                 <TouchableOpacity style={styles.close} onPress={this.props.closeModal}>
                     <AntDesign name='close' size={24} color={Colors.black} />
                 </TouchableOpacity>
+
+                {/* tên danh sách hiện tại */}
                 <View style={{ borderBottomColor: list.color, borderBottomWidth: 3 }}>
                     <Text style={styles.title}>Tên danh sách hiện tại</Text>
                     <Text style={{
@@ -49,16 +71,28 @@ export default class RenameListModal extends React.Component {
                     >
                         {list.name}</Text>
                 </View>
+
+                {/* nhập tên mới cho list, defaultValue bằng tên hiện tại của list */}
                 <View >
                     <Text style={styles.title}>Tên danh sách mới</Text>
-                    <TextInput 
-                        defaultValue={list.name} 
-                        style={styles.inputNewName} 
-                        onChangeText={text => this.setState({name: text})}
+                    <TextInput
+                        defaultValue={list.name}
+                        style={styles.inputNewName}
+                        onChangeText={text => this.setState({ name: text })}
                     />
                 </View>
+
+                {/* chọn màu cho list */}
+                <View style={styles.setColor}>
+                    <Text style={{ color: Colors.black, fontWeight: 'bold' }}>Chọn màu:</Text>
+                    {this.renderColor()}
+                </View>
+
+                {/* TouchableOpacity cập nhật lits */}
                 <View style={styles.inputContainer}>
-                    <TouchableOpacity style={styles.input} onPress={() => this.checkName()}>
+                    <TouchableOpacity style={[styles.input, { backgroundColor: this.state.color }]}
+                        onPress={() => this.checkName()}
+                    >
                         <Text>Cập nhật</Text>
                     </TouchableOpacity>
                 </View>
@@ -104,5 +138,14 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 4,
         padding: 5
-    }
+    },
+    setColor: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 10,
+        justifyContent: 'space-between',
+        alignSelf: 'stretch',
+        marginLeft: 20,
+        marginRight: 20,
+    },
 });

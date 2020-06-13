@@ -1,4 +1,4 @@
-import firebase from 'firebase';
+import firebase, { firestore } from 'firebase';
 import '@firebase/firestore';
 
 const firebaseConfig = {
@@ -11,38 +11,38 @@ const firebaseConfig = {
     appId: "1:302221914342:web:0f13425ad712051fd94b27"
 };
 
-class Fire{
-    constructor(callback){
+class Fire {
+    constructor(callback) {
         this.init(callback)
     }
-    init(callback){
-        if(!firebase.apps.length){
+    init(callback) {
+        if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig)
         }
 
         firebase.auth().onAuthStateChanged(user => {
-            if(user) {
-                callback(null,user)
-            }else{
+            if (user) {
+                callback(null, user)
+            } else {
                 firebase.auth().signInAnonymously().catch(error => {
                     callback(error);
                 })
             }
         })
     }
-    getLists(callback){
+    getLists(callback) {
         let ref = this.ref;
         // hủy đăng ký
         this.unsubcribe = ref.onSnapshot(snapshot => {
             lists = []
             snapshot.forEach(doc => {
-                lists.push({id: doc.id, ...doc.data() });
+                lists.push({ id: doc.id, ...doc.data() });
             });
             callback(lists);
         });
     }
 
-    addList(list){
+    addList(list) {
         let ref = this.ref;
 
         ref.add(list);
@@ -55,15 +55,17 @@ class Fire{
     }
 
 
-    get userID(){
+
+
+    get userID() {
         return firebase.auth().currentUser.uid;
     }
 
-    get ref(){
+    get ref() {
         return firebase.firestore().collection('users').doc(this.userID).collection('lists');
     }
 
-    remove(){
+    remove() {
         this.unsubcribe;
     }
 }

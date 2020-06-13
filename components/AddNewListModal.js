@@ -1,12 +1,12 @@
 // Modal thêm 1 danh sách công việc mới         **addListModal
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput,ImageBackground,Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, ImageBackground, Alert } from 'react-native';
 import { AntDesign } from '@expo/vector-icons'
 import Colors from '../Colors';
-import tempData from '../tempData';
+
 
 export default class AddNewListModal extends React.Component {
-    backgroundColor = ['#24A6D9', '#A7CBD9', '#EBE306', '#19925B', '#99FFCC', '#F70F32', '#FF69B4'];
+    backgroundColor = ['#24A6D9', '#A7CBD9', '#EBE306', '#19925B', '#800080', '#F70F32', '#FF69B4'];
 
     state = {
         name: '',
@@ -17,30 +17,26 @@ export default class AddNewListModal extends React.Component {
         return this.backgroundColor.map(color => {
             return (
                 <TouchableOpacity
-                    style={ {height:30,width:30,borderRadius: 8, backgroundColor:color }}
+                    style={{ height: 30, width: 30, borderRadius: 8, backgroundColor: color }}
                     key={color}
-                    onPress={() => this.setState({color})}
+                    onPress={() => this.setState({ color })}
                 />
             );
         });
     }
 
-    createNewList(){
-        const {name,color} = this.state
-        
-        // tempData.push({
-        //     name,
-        //     color,
-        //     work: []
-        // });
-        const list = {name,color};
+    // tạo danh sách mới
+    createNewList() {
+        const { name, color } = this.state
+
+        const list = { name, color };
         this.props.addList(list);
 
-        this.setState({name: ''})
+        this.setState({ name: '' })
         Alert.alert(
             'Thông báo',
             'Thêm mới thành cônng!!'
-            );
+        );
         this.props.closeModal();
     }
 
@@ -48,18 +44,18 @@ export default class AddNewListModal extends React.Component {
     CheckTextInput = () => {
         //Handler for the Submit onPress
         if (this.state.name != '') {
-          this.createNewList();
+            this.createNewList();
         } else {
-          Alert.alert('Thông báo','Vui lòng nhập tên');
+            Alert.alert('Thông báo', 'Vui lòng nhập tên');
         }
-      };
+    };
 
     render() {
         return (
-            <ImageBackground source={require('../background/background.jpg')} style={styles.container}>
+            <ImageBackground source={require('../background/newList-background.jpg')} style={styles.container}>
                 {/* thoát Modal */}
                 <TouchableOpacity style={styles.close} onPress={this.props.closeModal}>
-                    <AntDesign name='close' size={24} color={Colors.white} />
+                    <AntDesign name='close' size={24} color={Colors.black} />
                 </TouchableOpacity>
 
                 {/* tiêu đề và thẻ textInput */}
@@ -78,7 +74,7 @@ export default class AddNewListModal extends React.Component {
                         style={{
                             fontWeight: '800',
                             fontSize: 14,
-                            color: Colors.lightGreen
+                            color: Colors.black
                         }}
                     >
                         Chọn màu:
@@ -88,7 +84,7 @@ export default class AddNewListModal extends React.Component {
 
                 {/* nút submit */}
                 <TouchableOpacity style={[styles.button, { backgroundColor: this.state.color }]} onPress={() => this.CheckTextInput()}>
-                    <Text style={{ textAlign: 'center',fontSize:16 }}>Đồng ý</Text>
+                    <Text style={{ textAlign: 'center', fontSize: 16 }}>Đồng ý</Text>
                 </TouchableOpacity>
 
             </ImageBackground>
@@ -119,14 +115,14 @@ const styles = StyleSheet.create({
         height: 40,
         padding: 8,
         width: 280,
-        color:Colors.white
+        color: Colors.black
     },
     setColor: {
         flexDirection: 'row',
         alignItems: 'center',
-        padding:10,
+        padding: 10,
         justifyContent: 'space-between',
-        alignSelf:'stretch',
+        alignSelf: 'stretch',
         marginLeft: 20,
         marginRight: 20
     },

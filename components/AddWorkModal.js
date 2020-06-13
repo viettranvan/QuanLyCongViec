@@ -1,22 +1,16 @@
 // Modal thêm công việc mới         ** TodoModal
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, FlatList, ImageBackground, Modal, Animated, Keyboard, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, FlatList, ImageBackground, Modal, Animated, Alert } from 'react-native';
 import { AntDesign, Ionicons } from '@expo/vector-icons'
 import Colors from '../Colors';
 import RenameListMoadl from './RenameListMoadl';
 
-
-
-
 export default class AddWorkModal extends React.Component {
     state = {
-        // name: this.props.list.name,
-        // color: this.props.list.color,
-        // work: this.props.list.work
+
         showRename: false,
-        newWork: ''
+        newWork: '',
     }
-    
 
     // chuyển đổi trạng thái công việc, truyền vào index là chỉ số của công việc
     toggleWorkCompleted = index => {
@@ -30,20 +24,27 @@ export default class AddWorkModal extends React.Component {
     addWork() {
         let list = this.props.list;
 
-        if(this.state.newWork === ''){
+        var str = this.state.newWork;
+        var tmp = str.replace(/\s/g, ''); // xóa all khoảng trắng
+
+        // kiểm tra rỗng
+        if (this.state.newWork === '' || tmp === '') {
             Alert.alert(
                 'Thông báo',
                 'Vui lòng nhập tên công việc!'
             )
         }
-        else if(!list.work.some(todo => todo.title === this.state.newWork && this.state.newWork !== '')){
-          
+        else if (!list.work.some(todo => todo.title === this.state.newWork && this.state.newWork && tmp !== '')) {
+
             list.work.push({
                 title: this.state.newWork,
                 completed: false
             });
-            
+
             this.props.updateList(list);
+        }
+        else {
+            Alert.alert('Thông báo', 'Công việc đã tồn tại');
         }
         this.setState({ newWork: '' });
         //Keyboard.dismiss();
@@ -52,8 +53,8 @@ export default class AddWorkModal extends React.Component {
     // thao tác xóa
     deleteWork = index => {
         let list = this.props.list
-        
-        list.work.splice(index,1);
+
+        list.work.splice(index, 1);
         this.props.updateList(list);
         Alert.alert(
             'Thông báo',
@@ -62,13 +63,13 @@ export default class AddWorkModal extends React.Component {
     }
 
     // Hiện bảng thông báo có muốn xóa hay không
-    deleteOption= index =>{
+    deleteOption = index => {
         Alert.alert(
             'Thông báo',
             'Bạn có muốn xóa không ?',
             [
-                {text: 'Không', onPress: () => console.log('Cancel pressed'), style: 'cancel'},
-                {text: 'Có', onPress: () => this.deleteWork(index)}
+                { text: 'Không', onPress: () => console.log('Cancel pressed'), style: 'cancel' },
+                { text: 'Có', onPress: () => this.deleteWork(index) }
             ]
         );
     }
@@ -76,6 +77,7 @@ export default class AddWorkModal extends React.Component {
     renderWork = (todo, index) => {
         return (
             <View style={styles.workContainer}>
+                {/* Trạng thái công việc */}
                 <TouchableOpacity onPress={() => this.toggleWorkCompleted(index)}>
                     <Ionicons
                         name={todo.completed ? 'md-square' : 'md-square-outline'}   // nếu công việc đã hoàn thành thì tô đậm icon, chưa thì để icon k tô
@@ -83,6 +85,8 @@ export default class AddWorkModal extends React.Component {
                         color={Colors.darkGreen}
                     />
                 </TouchableOpacity>
+
+                {/* Tiêu đề công việc */}
                 <Text style={[
                     styles.workList,
                     { textDecorationLine: todo.completed ? 'underline' : 'none' },  // nếu công việc đã hoàn thành thì gạch chân công việc đó
@@ -90,52 +94,47 @@ export default class AddWorkModal extends React.Component {
                 ]}>
                     {todo.title}
                 </Text>
-                <TouchableOpacity style={{position:'absolute',right:10}} onPress={() => this.deleteOption(index)}>
-                    <AntDesign name='delete' size={24} color={Colors.black}/>
+
+                {/* TouchableOpacity xóa 1 công việc */}
+                <TouchableOpacity style={{ position: 'absolute', right: 10 }} onPress={() => this.deleteOption(index)}>
+                    <AntDesign name='delete' size={24} color={Colors.black} />
                 </TouchableOpacity>
             </View>
         );
     }
-    rightActions = (dragX, index) => {
-        return (
-            <TouchableOpacity>
-                <Animated.View>
-                    <Animated.Text>Delete</Animated.Text>
-                </Animated.View>
-            </TouchableOpacity>
-        )
-    }
+
     toggleRenameModal() {
         this.setState({ showRename: !this.state.showRename });
     }
-
 
     render() {
         const list = this.props.list;
         // tổng số lượng công việc
         const WorkAmount = list.work.length;
-        // số lượng công việc đã hoàn thành (conpleted=true) : list.work -> work trong tempData.js
+        // số lượng công việc đã hoàn thành (conpleted=true) 
         const CompletedAmount = list.work.filter(todo => todo.completed).length;
 
         return (
-            <ImageBackground source={require('../background/background-hoa.png')} style={{ flex: 1 }}>
+            <ImageBackground source={require('../background/newWork-background.jpg')} style={{ flex: 1 }}>
 
                 {/* Modal đổi tên list */}
                 <Modal
                     animationType='fade'
                     visible={this.state.showRename}
                     onRequestClose={() => this.toggleRenameModal()}
-
                 >
-                    <RenameListMoadl list={list} closeModal={() => this.toggleRenameModal()} updateList={this.props.updateList}/>
+                    <RenameListMoadl list={list} closeModal={() => this.toggleRenameModal()} updateList={this.props.updateList} />
                 </Modal>
 
                 {/* nút thoát và header */}
                 <View style={{ flex: 3 }}>
+                    {/*  TouchableOpacity thoát*/}
                     <TouchableOpacity style={styles.close} onPress={this.props.closeModal}>
                         <AntDesign name='close' size={24} color={Colors.black} />
                     </TouchableOpacity>
+
                     <View style={[styles.header, { borderBottomColor: list.color }]}>
+                        {/* Tiêu đề list */}
                         <Text style={{
                             fontSize: 36,
                             fontWeight: 'bold',
@@ -143,6 +142,8 @@ export default class AddWorkModal extends React.Component {
                         }}>
                             {list.name}
                         </Text>
+
+                        {/* Trạng thái */}
                         <Text style={{ fontStyle: 'italic' }}>Đã hoàn thành {CompletedAmount} trong {WorkAmount} công việc</Text>
 
                         {/* chỉnh sửa tên list */}
@@ -158,8 +159,6 @@ export default class AddWorkModal extends React.Component {
                         data={list.work}
                         renderItem={({ item, index }) => this.renderWork(item, index)}
                         keyExtractor={(_, index) => index.toString()}
-                        //contentContainerStyle={{ paddingHorizontal: 32, paddingVertical: 64 }}
-                        //showsVerticalScrollIndicator={false}
                     />
                 </View>
 
@@ -168,10 +167,12 @@ export default class AddWorkModal extends React.Component {
                     <TextInput
                         style={styles.input}
                         placeholder='Nhập công việc mới'
+                        placeholderTextColor={Colors.black}
                         onChangeText={text => this.setState({ newWork: text })}
                         value={this.state.newWork}
                     />
 
+                    {/* TouchableOpacity thêm công việc */}
                     <TouchableOpacity style={styles.addButton} onPress={() => this.addWork()}>
                         <AntDesign name='plus' size={24} color={Colors.black} />
                     </TouchableOpacity>
@@ -223,11 +224,13 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: '700',
         padding: 5,
-        paddingLeft: 20
+        paddingLeft: 20,
+        paddingRight: 25
     },
     workContainer: {
         paddingHorizontal: 32,
         flexDirection: 'row',
         alignItems: 'center'
     },
+
 });

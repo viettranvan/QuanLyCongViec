@@ -1,3 +1,5 @@
+// dữ liệu mẫu trc khi kết nối firebase
+
 import colors from './Colors'
 
 export default tempData = [
